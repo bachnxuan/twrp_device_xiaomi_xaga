@@ -92,7 +92,6 @@ PRODUCT_PACKAGES += \
 # Additional target Libraries
 TARGET_RECOVERY_DEVICE_MODULES += \
     android.hardware.keymaster@4.1
-    
 
 TARGET_INIT_VENDOR_LIB := libinit_xaga
 TARGET_RECOVERY_DEVICE_MODULES := libinit_xaga
