@@ -1,0 +1,74 @@
+name: Xaga TWRP Builder
+
+on:
+  workflow_dispatch:
+
+env:
+  DEBIAN_FRONTEND: noninteractive
+  MAN_DISABLE: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Maximize build space
+      uses: rokibhasansagar/slimhub_actions@main
+
+    - name: Setup ccache
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        create-symlink: true
+
+    - name: Setup zram
+      run: |
+        sudo apt install linux-modules-extra-$(uname -r) zram-tools -y
+        sudo modprobe zram
+        sudo sed -i 's/^#PERCENT=50/PERCENT=90/' /etc/default/zramswap
+        sudo sed -i 's/^#PRIORITY=100/PRIORITY=1000/' /etc/default/zramswap
+        sudo systemctl restart zramswap
+        zramctl
+
+    - name: Set variables
+      id: var
+      run: |
+        echo "::set-output name=date::$(date +%F)"
+
+    - name: Prepare environment
+      run: |
+        sudo apt update && sudo apt upgrade -y
+        sudo apt -y install git aria2 
+        
+        git clone https://gitlab.com/OrangeFox/misc/scripts
+        cd scripts
+        sudo bash setup/android_build_env.sh
+        sudo bash setup/install_android_sdk.sh || true
+
+    - name: Init & sync manifest
+      run: |
+        git config --global user.name "bachnxuan"
+        git config --global user.email "bachnxuan@gmail.com"
+        repo init --depth=1 -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b twrp-12.1
+        repo sync -c --no-clone-bundle --no-tags --optimized-fetch --prune --force-sync -j$(nproc --all)
+
+    - name: Repopick patches
+      run: |
+        source build/envsetup.sh
+        repopick 5639
+        repopick 5675
+
+    - name: Clone device tree
+      run: |
+        git clone https://github.com/bachnxuan/twrp_device_xiaomi_xaga.git -b twrp-12.1 ./device/xiaomi/xaga
+    
+    - name: Building
+      run: |
+        source build/envsetup.sh
+        lunch twrp_xaga-eng
+        mka vendorbootimage -j$(nproc --all)
+    
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: xaga_twrp-12.1
+        path: workspace/out/target/product/xaga/vendor_boot.img
