@@ -1,27 +1,4 @@
 # TWRP device tree for Redmi Note 11T Pro (xaga)
-本 tree 同时支持 Redmi Note 11T Pro (xaga) 和 Redmi Note 11T pro+ (xagapro)
-
-## 食用
-从 releases 中寻找版本或从代码上编译
-
-### 刷入镜像
-
-- 使用 releases 中压缩包的 bat 文件 (推荐)
-
-```
--- 压缩包内包含了 TWRP 和官方的 Recovery 文件，
-
--- 下载并解压，双击打开bat文件，按照提示操作即可 (仅能在 bootloader 状态下使用)
-```
-
-- 使用 fastboot 命令手动刷入
-
-## 适用范围
-目前分支能引导版本:
-5.10.66 内核版本，即当前所有版本。
-
-不能引导:
-5.10.81 内核版本，即之后将推送的开发版版本。
 
 ===================================================================================<br>
 The Redmi Note 11T Pro (codenamed _"xaga"_) is a high-end, mid-range smartphone from Xiaomi.
