@@ -71,4 +71,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: xaga_twrp-12.1
-        path: workspace/out/target/product/xaga/vendor_boot.img
+        path: out/target/product/xaga/vendor_boot.img
